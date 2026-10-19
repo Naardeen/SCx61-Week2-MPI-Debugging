@@ -1,0 +1,26 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+
+# Generated data and experiment outputs
+*.npy
+*.npz
+
+# Temporary files
+*.tmp
+*.log
+
+# Local secrets
+.env
+*.pem
+id_rsa
+id_ed25519
+
+# Editor and OS files
+.vscode/
+.DS_Store
+Thumbs.db
