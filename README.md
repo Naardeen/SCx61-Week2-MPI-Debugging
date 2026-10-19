@@ -9,7 +9,7 @@ The experiments compare a naive blocking communication pattern with a corrected 
 ## Objectives
 
 - Investigate how image width affects MPI program completion.
-- Identify possible deadlock behavior in blocking point-to-point communication.
+- Investigate possible deadlock behavior in blocking point-to-point communication.
 - Test diagnostic hypotheses related to network connectivity and SSH access.
 - Verify the corrected implementation against a serial reference.
 - Document the experiments, observations, and limitations.
@@ -50,7 +50,7 @@ SCx61-Week2-MPI-Debugging/
 └── README.md
 ```
 
-The four selected input images are also included in the repository root. The two screenshots in `results/` document the naive MPI width-sweep experiment.
+Four selected input images are also included in the repository root. The screenshots in `results/` document the naive MPI width-sweep experiment.
 
 The `config/` and `source_code/` directories contain the course lab's cluster configuration files, retained for reproducibility.
 
@@ -104,7 +104,7 @@ The results are consistent with a possible deadlock associated with the naive bl
 
 ### Experiment Evidence
 
-The following screenshots contain the terminal output from the width-sweep tests:
+The following screenshots contain terminal output from the width-sweep tests:
 
 - `results/naive_mpi_width_sweep_1.png`
 - `results/naive_mpi_width_sweep_2.png`
@@ -132,7 +132,7 @@ An additional experiment changed the Open MPI eager-limit configuration.
 - The 8192-wide test completed with the adjusted configuration.
 - The 20000-wide test still timed out.
 
-This configuration change therefore did not provide a general solution in the tested environment. It is an experimental observation, not a recommended universal fix.
+This configuration change did not provide a general solution in the tested environment. It is an experimental observation, not a recommended universal fix.
 
 ## Diagnostic Checks
 
@@ -147,11 +147,47 @@ These checks weakened the hypotheses that basic network connectivity or SSH acce
 
 The experiments were conducted in the SCx61 Week 2 Docker environment.
 
-Relevant dependencies and lab resources include:
+Requirements include:
 
+- Docker and Docker Compose
 - Python
 - NumPy
 - Pillow
 - `mpi4py`
 - Open MPI
-- Docker and
+- The lab's host configuration and required reference scripts
+
+### Run the Corrected Implementation
+
+Start the lab's Docker Compose cluster using the course-provided configuration and ensure that all three nodes are healthy. Then open a shell in `node0` and move to the shared working directory.
+
+Example commands, assuming the cluster is already running and the files are available in `/home/student/work`:
+
+```bash
+cd /home/student/work
+python3 make_test_image.py --width 8192 --height 300 --out-prefix test_8192
+mpirun --hostfile hostfile -n 6 python3 img_mpi_v2_halo.py test_8192 test_8192_out
+```
+
+The exact arguments accepted by the image-processing script depend on the lab version. Use the course-provided verification script and reference-image procedure to compare the parallel output against the serial result. Do not interpret a successful process exit alone as proof of pixel-level correctness.
+
+The naive implementation used for the width-sweep experiment belongs to the lab's Break Kit and is intentionally not included in this public repository.
+
+Results may vary with MPI configuration, system resources, and execution environment.
+
+## Conclusion
+
+The width-sweep experiment showed that the naive implementation completed at width 4040 but timed out at width 4042 in the tested environment. The corrected implementation passed the 8192 × 300 serial-reference comparison with zero differing pixels.
+
+The experiments highlight the importance of diagnosing communication behavior, testing across different input sizes, and validating parallel output against a trusted reference.
+
+## Documentation
+
+- `EXTENSION.md` — additional experiment results and analysis.
+- `INCIDENT.md` — incident investigation and diagnostic hypotheses.
+- `AI_LOG.md` — disclosure of AI assistance and how it was used.
+- `KNOWLEDGE_CHECK.md` — MPI concepts and experiment-related questions.
+
+## AI Usage Disclosure
+
+AI assistance was used to help explain MPI communication concepts, organize diagnostic hypotheses, and structure the experiment documentation. Experimental commands and recorded outputs were used as the basis for the conclusions. AI-generated explanations were treated as hypotheses to evaluate rather than as experimental evidence.
